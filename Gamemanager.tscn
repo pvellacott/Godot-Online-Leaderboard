@@ -1,0 +1,21 @@
+[gd_scene load_steps=4 format=3 uid="uid://bk5w02kbc82od"]
+
+[ext_resource type="Script" uid="uid://q4rnoiemodiw" path="res://gamemanager.gd" id="1_f5wh3"]
+[ext_resource type="PackedScene" uid="uid://u724ytsb31qe" path="res://login_screen.tscn" id="2_48ao5"]
+[ext_resource type="PackedScene" uid="uid://rtjbqje2bdoa" path="res://action_screen.tscn" id="3_6fpyd"]
+
+[node name="Master" type="Node"]
+script = ExtResource("1_f5wh3")
+
+[node name="LoginScreen" parent="." instance=ExtResource("2_48ao5")]
+
+[node name="ActionScreen" parent="." instance=ExtResource("3_6fpyd")]
+visible = false
+
+[node name="HTTPRequest" type="HTTPRequest" parent="."]
+
+[connection signal="submitted" from="LoginScreen" to="." method="_on_login_screen_submitted"]
+[connection signal="submitted" from="LoginScreen" to="ActionScreen" method="_on_login_screen_submitted"]
+[connection signal="done_pressed" from="ActionScreen" to="." method="_on_action_screen_done_pressed"]
+[connection signal="done_pressed" from="ActionScreen" to="LoginScreen" method="_on_action_screen_done_pressed"]
+[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_request_completed"]
