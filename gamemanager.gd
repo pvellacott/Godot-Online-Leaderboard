@@ -24,7 +24,7 @@ func _on_login_screen_submitted(username: Variant):
 func _on_action_screen_done_pressed(score: int):
 	print("this is the final number ", score)
 	action_screen.hide()
-	login_screen.show()
+	leaderboard_screen.show()
 	return score
 	
 	
