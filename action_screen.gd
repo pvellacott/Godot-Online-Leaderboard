@@ -1,7 +1,7 @@
 class_name ActionScreen
 extends Control
 
-signal done_pressed(final_count: int)
+signal done_pressed(score: int)
 
 var counter: int = 0
 
@@ -16,7 +16,7 @@ func _ready():
 
 func _on_login_screen_submitted(username: Variant) -> void:
 	welcome_label.text = "Welcome, " + username + "!"
-	pass # Replace with function body.
+	pass 
 
 func _on_action_pressed():
 	counter += 1

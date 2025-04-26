@@ -32,4 +32,10 @@ placeholder_text = "Username"
 
 [node name="SubmitButton" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
-text = "Submit"
+text = "Start
+"
+
+[node name="LeaderboardButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+text = "Leaderboard
+"

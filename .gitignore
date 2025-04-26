@@ -13,3 +13,15 @@ export_presets.cfg
 .mono/
 data_*/
 mono_crash.*.json
+
+#vscode
+.vscode/
+
+#config
+config/
+
+#build
+build/
+
+#export
+export/
