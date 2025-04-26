@@ -13,9 +13,11 @@ config_version=5
 config/name="LeaderboardProject"
 run/main_scene="uid://bk5w02kbc82od"
 config/features=PackedStringArray("4.4", "GL Compatibility")
-config/icon="res://icon.svg"
+boot_splash/image="uid://ccli5rproxfx0"
+config/icon="res://imgs/icon.svg"
 
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
