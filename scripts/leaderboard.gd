@@ -23,7 +23,7 @@ func _ready():
 	fetch_scores() 
 	
 
-# Submitting scores
+# Submitting scores / network gobaligook
 func _on_action_screen_done_pressed(score: int):
 	score_list.clear()
 	score_list.add_item("Loading scores...")

@@ -36,34 +36,3 @@ func _on_leaderboard_back_pressed() -> void:
 	leaderboard_screen.hide()
 	login_screen.show()
 	pass 
-
-
-
-# Network gobaligook
-func submit_score(username: String, score: int):
-	var url = API_CONFIG.API_URL
-	var body = {
-		"username": username,
-		"score": score
-	}
-	var json_body = JSON.stringify(body)
-
-	var headers = ["Content-Type: application/json"]
-
-	$HTTPRequest.request(
-		url,
-		headers,
-		true,
-		HTTPClient.METHOD_POST,
-		json_body
-	)
-
-
-
-func _on_http_request_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void:
-	var response_text = body.get_string_from_utf8()
-	if response_code == 200:
-		print("Worked! Pog!: ", response_text)
-	else:
-		print("Submission failed: ", response_code)
-	pass 
