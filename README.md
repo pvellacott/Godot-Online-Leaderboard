@@ -5,7 +5,7 @@ Template for setting up a godot game with an online leaderboard. Backend is usin
 
 ![leaderboard](https://github.com/user-attachments/assets/83ece5f7-25b2-4e1e-957d-46c6283d1f35)
 
-## Some Steps
+## Some Setup Steps
 1. Donwload this mf
 2. Setup lamda function located in src/lambda/
 3. Setup a dynamodb table. I used this format -
