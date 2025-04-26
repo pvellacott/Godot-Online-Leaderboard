@@ -20,7 +20,7 @@ func _on_submit_pressed():
 		return
 	submitted.emit(username)
 
-# Clears Username
+# Username clears everytime you goes back to da menu
 func _on_action_screen_done_pressed(score: int) -> void:
 	username_input.clear()
 	pass 

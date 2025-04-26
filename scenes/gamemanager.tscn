@@ -1,19 +1,19 @@
 [gd_scene load_steps=5 format=3 uid="uid://bk5w02kbc82od"]
 
-[ext_resource type="Script" uid="uid://q4rnoiemodiw" path="res://gamemanager.gd" id="1_f5wh3"]
-[ext_resource type="PackedScene" uid="uid://u724ytsb31qe" path="res://login_screen.tscn" id="2_48ao5"]
-[ext_resource type="PackedScene" uid="uid://rtjbqje2bdoa" path="res://action_screen.tscn" id="3_6fpyd"]
-[ext_resource type="PackedScene" uid="uid://dhj0tisdfdl26" path="res://leaderboard.tscn" id="4_48ao5"]
+[ext_resource type="Script" uid="uid://q4rnoiemodiw" path="res://scripts/gamemanager.gd" id="1_w7is2"]
+[ext_resource type="PackedScene" uid="uid://u724ytsb31qe" path="res://scenes/login_screen.tscn" id="2_opddj"]
+[ext_resource type="PackedScene" uid="uid://rtjbqje2bdoa" path="res://scenes/action_screen.tscn" id="3_7lrkp"]
+[ext_resource type="PackedScene" uid="uid://dhj0tisdfdl26" path="res://scenes/leaderboard.tscn" id="4_rc1hy"]
 
 [node name="Master" type="Node"]
-script = ExtResource("1_f5wh3")
+script = ExtResource("1_w7is2")
 
-[node name="LoginScreen" parent="." instance=ExtResource("2_48ao5")]
+[node name="LoginScreen" parent="." instance=ExtResource("2_opddj")]
 
-[node name="ActionScreen" parent="." instance=ExtResource("3_6fpyd")]
+[node name="ActionScreen" parent="." instance=ExtResource("3_7lrkp")]
 visible = false
 
-[node name="Leaderboard" parent="." instance=ExtResource("4_48ao5")]
+[node name="Leaderboard" parent="." instance=ExtResource("4_rc1hy")]
 visible = false
 anchors_preset = 0
 anchor_right = 0.0
