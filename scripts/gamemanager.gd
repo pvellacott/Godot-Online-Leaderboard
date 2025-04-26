@@ -16,7 +16,6 @@ func _ready():
 
 # Scene Management
 func _on_login_screen_submitted(username: Variant):
-	print("Username entered: ", username)
 	login_screen.hide()
 	action_screen.show()
 	return username

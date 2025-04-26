@@ -46,11 +46,6 @@ func submit_score(username: String, score: int) -> void:
 	var url = API_CONFIG.API_URL
 	var body = '{"username": "%s", "score": %d}' % [username, score] 
 	var headers = ["Content-Type: application/json"]
-
-	print("Submitting score - Username: '%s', Score: %d" % [username, score])
-	print("Request URL: ", url)
-	print("Request Method: POST")
-	print("Request Headers: ", headers)
 	print("Request Body: ", body)
 	$HTTPRequest.request(url, headers, HTTPClient.METHOD_POST, body)
 
