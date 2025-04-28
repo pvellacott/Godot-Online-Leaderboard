@@ -17,4 +17,4 @@ With GSI -
 - Sort key: score (Number)
 - Index name: leaderboard-score-index
 4. Setup API Gateway (or use Function URLs)
-5. Add your API url, perhaps like this -> config/api_config.gd -> <code>const API_URL = "https://your-api-id.lambda-url.region.on.aws"</code>
+5. Add your API url & private key, perhaps like this -> config/api_config.gd -> <code>const API_URL = "https://your-api-id.lambda-url.region.on.aws"</code>
