@@ -34,8 +34,11 @@ func _on_action_screen_done_pressed(score: int):
 func fetch_scores():
 	score_list.clear()
 	score_list.add_item("Loading scores...")
-	
-	var error = http_request.request(API_CONFIG.API_URL)
+	var headers = [
+		"Content-Type: application/json",
+		"x-api-key: %s" % API_CONFIG.API_KEY
+	]
+	var error = http_request.request(API_CONFIG.API_URL, headers)
 	if error != OK:
 		print("An error occurred in HTTP request: ", error)
 		score_list.clear()
@@ -45,7 +48,10 @@ func fetch_scores():
 func submit_score(username: String, score: int) -> void:
 	var url = API_CONFIG.API_URL
 	var body = '{"username": "%s", "score": %d}' % [username, score] 
-	var headers = ["Content-Type: application/json"]
+	var headers = [
+		"Content-Type: application/json",
+		"x-api-key: %s" % API_CONFIG.API_KEY,
+		]
 	print("Request Body: ", body)
 	$HTTPRequest.request(url, headers, HTTPClient.METHOD_POST, body)
 

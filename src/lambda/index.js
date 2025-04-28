@@ -1,9 +1,21 @@
 const AWS = require("aws-sdk")
 const db = new AWS.DynamoDB.DocumentClient()
 
+const EXPECTED_API_KEY = "your-api-key-pls"
+
 exports.handler = async (event) => {
   const tableName = "ranked_scores"
   const method = event.requestContext.http.method
+  const apiKey = event.headers ? event.headers['x-api-key'] : null
+
+  // --- START: API Key Check ---
+  if (apiKey !== EXPECTED_API_KEY) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: "Unauthorized" })
+    }
+  }
+  // --- END: API Key Check ---
 
   // Submit a score
   if (method === "POST") {
@@ -163,8 +175,9 @@ exports.handler = async (event) => {
     }
   }
 
+  // Fallback for unhandled methods (after API key check)
   return {
     statusCode: 405,
-    body: JSON.stringify({ message: JSON.stringify(event)})
+    body: JSON.stringify({ message: "Method Not Allowed" })
   }
 }
