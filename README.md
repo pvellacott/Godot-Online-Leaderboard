@@ -7,7 +7,7 @@ Template for setting up a godot game with an online leaderboard. Backend is usin
 
 ## Some Setup Steps
 1. Donwload this mf
-2. Setup lamda function located in src/lambda/
+2. Setup lamda function located in src/lambda/ *make sure to add IAM role for dynamodb access on the lambda function
 3. Setup a dynamodb table. I used this format -
  - Table name: ranked_scores
  - Partition key: username (String)
