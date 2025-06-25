@@ -2,6 +2,7 @@
 
 Template for setting up a godot game with an online leaderboard. Backend is using lambda+dynamodb
 
+Example of the leaderboard working on the HEAVILY WIP (just started) game @ browsergame.epicgames.nz
 
 ![leaderboard](https://github.com/user-attachments/assets/83ece5f7-25b2-4e1e-957d-46c6283d1f35)
 
