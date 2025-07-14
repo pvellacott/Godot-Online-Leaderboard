@@ -79,7 +79,7 @@ func _on_http_request_request_completed(result: int, response_code: int, headers
 
 func update_leaderboard(scores: Array):
 	scores.sort_custom(func(a, b): return a.score > b.score)
-	
+	score_list.clear()
 	for item in scores:
 		if item.has("username") and item.has("score"):
 			score_list.add_item("%s: %d" % [item.username, item.score])
