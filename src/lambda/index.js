@@ -6,27 +6,44 @@ const EXPECTED_API_KEY = "your-api-key-pls"
 exports.handler = async (event) => {
   const tableName = "ranked_scores"
   const method = event.requestContext.http.method
-  const apiKey = event.headers ? event.headers['x-api-key'] : null
+  const apiKey = event.headers?.['x-api-key'] || event.headers?.['X-Api-Key'] || null;
+
+  // Dynamically set Access-Control-Allow-Origin
+  const origin = 'https://pvellacott.github.io';
+  const corsHeaders = {
+    "Access-Control-Allow-Origin": origin, 
+    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, X-Api-Key",
+    "Access-Control-Max-Age": 86400 // Cache preflight response for 24 hours
+  };
+
+  // --- Handle CORS Preflight ---
+  if (method === "OPTIONS") {
+    return {
+      statusCode: 204,
+      headers: corsHeaders
+    };
+  }
 
   // --- START: API Key Check ---
   if (apiKey !== EXPECTED_API_KEY) {
     return {
       statusCode: 401,
+      headers: corsHeaders,
       body: JSON.stringify({ message: "Unauthorized" })
     }
   }
-  // --- END: API Key Check ---
 
-  // Submit a score
+  // --- POST: Submit Score ---
   if (method === "POST") {
     try {
       const body = JSON.parse(event.body)
       let { username, score } = body
 
-      // Check if username and score are provided and valid (number more than 0 cos that score sucks!!!!)
-      if (!username || typeof score !== "number"|| score <= 0) {
+      if (!username || typeof score !== "number" || score <= 0) {
         return {
           statusCode: 400,
+          headers: corsHeaders,
           body: JSON.stringify({ message: "Username and score are required" })
         }
       }
@@ -35,88 +52,108 @@ exports.handler = async (event) => {
       if (isNaN(score)) {
         return {
           statusCode: 400,
+          headers: corsHeaders,
           body: JSON.stringify({ message: "Score must be a valid number" })
         }
       }
 
-      // --- START: Query existing highest score ---
+      // Get all scores from the leaderboard
       const queryParams = {
         TableName: tableName,
         IndexName: "leaderboard-score-index",
         KeyConditionExpression: "leaderboard = :lb",
-        FilterExpression: "username = :uname", // Filter results for the specific user
         ExpressionAttributeValues: {
-          ":lb": "global",
-          ":uname": username
+          ":lb": "global"
         },
-        ProjectionExpression: "score, #ts", // Get score and timestamp
-        ExpressionAttributeNames: { "#ts": "timestamp" }, // Alias for timestamp
-        ScanIndexForward: false, // Sort by score descending
-        Limit: 1 // We only need the top one
+        ProjectionExpression: "username, score, #ts",
+        ExpressionAttributeNames: { "#ts": "timestamp" },
+        ScanIndexForward: false
       }
 
-      const existingData = await db.query(queryParams).promise()
-      const existingHighestScoreItem = existingData.Items.length > 0 ? existingData.Items[0] : null
-      // --- END: Query existing highest score ---
+      console.log("Getting all scores with params:", JSON.stringify(queryParams, null, 2))
+      const allScores = await db.query(queryParams).promise()
+      console.log("All scores result:", JSON.stringify(allScores, null, 2))
+      
+      // Filter scores for this specific user
+      const userScores = allScores.Items.filter(item => item.username === username)
+      console.log("User scores:", JSON.stringify(userScores, null, 2))
+      
+      // Check for duplicate score
+      const exactDuplicate = userScores.find(item => item.score === score)
+      if (exactDuplicate) {
+        return {
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({ message: "Score not updated: score already exists" })
+        }
+      }
 
-      // --- START: Conditional Write based on score comparison ---
+      // Get the highest score from the user's existing scores
+      const existingHighestScoreItem = userScores.length > 0 ? userScores[0] : null
+
+      // Only allow if no existing score OR if new score is strictly higher
       if (existingHighestScoreItem === null || score > existingHighestScoreItem.score) {
-        // New score is higher or it's the first score for this user
         await db.put({
           TableName: tableName,
           Item: {
             username,
             score,
             leaderboard: "global",
-            timestamp: Date.now() 
+            timestamp: Date.now()
           }
         }).promise()
 
-        // If there was an old score delete it
         if (existingHighestScoreItem !== null) {
           try {
             await db.delete({
               TableName: tableName,
               Key: {
                 username: username,
-                timestamp: existingHighestScoreItem.timestamp // The timestamp of the OLD item
+                timestamp: existingHighestScoreItem.timestamp
               }
             }).promise()
           } catch (deleteErr) {
-            // Log the error but don't fail the request
-            console.error(`Failed to delete old score for ${username} with timestamp ${existingHighestScoreItem.timestamp}:`, deleteErr)
+            console.error(`Failed to delete old score for ${username}:`, deleteErr)
           }
         }
 
         return {
           statusCode: 200,
-          headers: { "Access-Control-Allow-Origin": "*" },
+          headers: corsHeaders,
           body: JSON.stringify({ message: "Score submitted successfully" })
         }
       } else {
-        // New score is not higher
         return {
-          statusCode: 200, // Or maybe 409 Conflict? 200 is fine as per original code
-          headers: { "Access-Control-Allow-Origin": "*" },
-          body: JSON.stringify({ message: "Score not updated: new score is not higher" })
+          statusCode: 200,
+          headers: corsHeaders,
+          body: JSON.stringify({ message: "Score not updated: new score is not higher than existing score" })
         }
       }
-      // --- END: Conditional Write based on score comparison ---
     } catch (err) {
       console.error("Error submitting score:", err)
+      console.error("Error details:", {
+        message: err.message,
+        code: err.code,
+        statusCode: err.statusCode,
+        stack: err.stack
+      })
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: "Internal Server Error" })
+        headers: corsHeaders,
+        body: JSON.stringify({ 
+          message: "Internal Server Error",
+          error: err.message,
+          code: err.code || "UNKNOWN_ERROR"
+        })
       }
     }
   }
 
-  // Get leaderboard and player rank
+  // --- GET: Fetch Leaderboard ---
   if (method === "GET") {
     const playerUsername = event.queryStringParameters?.username
 
     try {
-      // Get Top 10 Scores
       const topData = await db.query({
         TableName: tableName,
         IndexName: "leaderboard-score-index",
@@ -125,7 +162,7 @@ exports.handler = async (event) => {
           ":lb": "global"
         },
         ScanIndexForward: false,
-        Limit: 10
+        Limit: 1000
       }).promise()
 
       const topScores = topData.Items.map(item => ({
@@ -133,7 +170,6 @@ exports.handler = async (event) => {
         score: item.score
       }))
 
-      // Get Player Rank (if requested)
       let playerRank = null
       let playerScore = null
 
@@ -159,7 +195,7 @@ exports.handler = async (event) => {
 
       return {
         statusCode: 200,
-        headers: { "Access-Control-Allow-Origin": "*" },
+        headers: corsHeaders,
         body: JSON.stringify({
           topScores,
           playerScore,
@@ -170,14 +206,16 @@ exports.handler = async (event) => {
       console.error("Error fetching leaderboard:", err)
       return {
         statusCode: 500,
-        body: JSON.stringify({ message: "Internal Server Error" })
+        headers: corsHeaders,
+        body: JSON.stringify({ message: "Internal Server Error: " + err.message })
       }
     }
   }
 
-  // Fallback for unhandled methods (after API key check)
+  // --- Fallback for unsupported methods ---
   return {
     statusCode: 405,
+    headers: corsHeaders,
     body: JSON.stringify({ message: "Method Not Allowed" })
   }
 }
