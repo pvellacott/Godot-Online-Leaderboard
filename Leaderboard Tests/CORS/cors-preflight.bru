@@ -1,0 +1,43 @@
+meta {
+  name: CORS Preflight
+  type: http
+  seq: 6
+}
+
+options {
+  url: {{apiUrl}}
+  body: none
+  auth: none
+}
+
+headers {
+  Origin: https://pvellacott.github.io
+  Access-Control-Request-Method: POST
+  Access-Control-Request-Headers: Content-Type, X-Api-Key
+}
+
+tests {
+  test("CORS Preflight: Status code is 204 No Content", function() {
+    expect(res.status).to.equal(204);
+  });
+
+  test("CORS Preflight: Access-Control-Allow-Origin is correct", function() {
+    expect(res.headers['access-control-allow-origin']).to.equal('https://pvellacott.github.io');
+  });
+
+  test("CORS Preflight: Allowed Methods are correct", function() {
+    expect(res.headers['access-control-allow-methods']).to.equal('GET, POST, OPTIONS');
+  });
+
+  test("CORS Preflight: Allowed Headers are correct", function() {
+    expect(res.headers['access-control-allow-headers']).to.equal('Content-Type, X-Api-Key');
+  });
+
+  test("CORS Preflight: Max-Age is set for caching", function() {
+    expect(res.headers['access-control-max-age']).to.equal('86400');
+  });
+
+  test("CORS Preflight: Response body is empty", function() {
+    expect(res.body).to.equal('');
+  });
+}

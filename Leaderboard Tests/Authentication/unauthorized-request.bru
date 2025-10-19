@@ -1,0 +1,31 @@
+meta {
+  name: Unauthorized Request
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{apiUrl}}
+  body: none
+  auth: none
+}
+
+headers {
+  X-Api-Key: invalid-key
+}
+
+tests {
+  test("Status code is 401", function() {
+    expect(res.getStatus()).to.equal(401);
+  });
+  
+  test("Response has CORS headers", function() {
+    expect(res.getHeader("Access-Control-Allow-Origin")).to.equal("https://pvellacott.github.io");
+  });
+  
+  test("Response contains unauthorized message", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("message");
+    expect(body.message).to.equal("Unauthorized");
+  });
+}

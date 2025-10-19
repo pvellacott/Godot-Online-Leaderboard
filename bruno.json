@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Godot Leaderboard API",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

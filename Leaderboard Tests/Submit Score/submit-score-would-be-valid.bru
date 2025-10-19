@@ -1,0 +1,35 @@
+meta {
+  name: Submit Score - Duplicate Score
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{apiUrl}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-Api-Key: {{apiKey}}
+}
+
+body:json {
+  {
+    "username": "{{testUsername}}",
+    "score": {{testScore}}
+  }
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response contains duplicate score message", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("message");
+    expect(body.message).to.equal("Score not updated: exact duplicate score already exists");
+  });
+}

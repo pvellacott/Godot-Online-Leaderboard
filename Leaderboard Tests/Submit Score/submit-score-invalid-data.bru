@@ -1,0 +1,29 @@
+meta {
+  name: Submit Score - Invalid Data
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{apiUrl}}
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+  X-Api-Key: {{apiKey}}
+}
+
+body:json {
+  {
+    "username": "",
+    "score": -100
+  }
+}
+
+tests {
+  test("Status code is 400", function() {
+    expect(res.getStatus()).to.equal(400);
+  });
+  

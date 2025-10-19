@@ -1,0 +1,43 @@
+meta {
+  name: Get Leaderboard
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{apiUrl}}
+  body: none
+  auth: none
+}
+
+headers {
+  X-Api-Key: {{apiKey}}
+}
+
+tests {
+  test("Status code is 200", function() {
+    expect(res.getStatus()).to.equal(200);
+  });
+  
+  test("Response contains topScores array", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("topScores");
+    expect(body.topScores).to.be.an("array");
+    expect(body.topScores.length).to.be.greaterThan(0);
+  });
+  
+  test("Response structure is correct", function() {
+    const body = res.getBody();
+    expect(body).to.have.property("topScores");
+    expect(body).to.have.property("playerScore");
+    expect(body).to.have.property("playerRank");
+  });
+  
+  test("topScores contains valid score objects", function() {
+    const body = res.getBody();
+    expect(body.topScores[0]).to.have.property("username");
+    expect(body.topScores[0]).to.have.property("score");
+    expect(body.topScores[0].username).to.be.a("string");
+    expect(body.topScores[0].score).to.be.a("number");
+  });
+}
